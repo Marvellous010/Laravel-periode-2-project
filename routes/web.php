@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,10 +12,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use App\Http\Controllers\TestController;
+
+Route::get('/db-test', [TestController::class, 'index']);
+use App\Http\Controllers\KeuzedeelController;
+
+
+Route::get('/keuzedelen/toevoegen', function () {
+    return view('admin.keuzedeel_toevoegen');
+})->name('admin.keuzedelen.create');
+
+Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
+    ->name('admin.keuzedelen.store');
+
+
+
 Route::get('/', function () {
     return view('welcome');
 });
-
 Route::get('/login', function () {
     return view('login');
 });
@@ -59,7 +72,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/keuzedelen/toevoegen', function () {
         return view('admin.keuzedeel_toevoegen');
-    })->name('keuzedelen.toevoegen');
+    })->name('admin.keuzedelen.create');
+
+    Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
+        ->name('admin.keuzedelen.store');
+
+
 
     Route::get('/overzicht', function () {
         return view('admin.overzicht');

@@ -5,7 +5,11 @@
 @section('content')
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-tcr-green">KEUZEDELEN BEHEREN</h1>
-        <button class="bg-tcr-lime text-tcr-green px-4 py-2 rounded font-semibold hover:bg-opacity-90 transition-colors">+ NIEUW KEUZEDEEL</button>
+        <a href="{{ route('admin.keuzedelen.create') }}"
+           class="bg-tcr-lime text-tcr-green py-3 px-4 rounded font-semibold">
+            + NIEUW KEUZEDEEL TOEVOEGEN
+        </a>
+
     </div>
 
     <div class="bg-white rounded-lg shadow p-4 mb-6 flex gap-4 items-center">

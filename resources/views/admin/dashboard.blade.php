@@ -27,7 +27,10 @@
     <section class="bg-white rounded-lg shadow p-6 mb-8">
         <h2 class="text-xl font-bold text-tcr-green mb-4">SNELLE ACTIES</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button class="bg-tcr-lime text-tcr-green py-3 px-4 rounded font-semibold hover:bg-opacity-90 transition-colors">+ NIEUW KEUZEDEEL TOEVOEGEN</button>
+            <a href="{{ route('admin.keuzedelen.create') }}"
+               class="bg-tcr-lime text-tcr-green py-3 px-4 rounded font-semibold hover:bg-opacity-90 transition-colors inline-block">
+                + NIEUW KEUZEDEEL TOEVOEGEN
+            </a>
             <button class="bg-tcr-green text-white py-3 px-4 rounded font-semibold hover:bg-opacity-90 transition-colors">STUDENTEN INLEZEN (CSV)</button>
             <button class="bg-tcr-green text-white py-3 px-4 rounded font-semibold hover:bg-opacity-90 transition-colors">INSCHRIJVINGEN OPENEN/SLUITEN</button>
             <button class="bg-tcr-green text-white py-3 px-4 rounded font-semibold hover:bg-opacity-90 transition-colors">EXPORT INSCHRIJVINGEN</button>

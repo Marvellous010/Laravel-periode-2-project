@@ -1,0 +1,17 @@
+{
+  "name": "laravel-periode-2-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vite.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PandaDeveloper13/Laravel-periode-2-project"
+  },
+  "private": true,
+  "dependencies": {
+    "vite": "^7.3.0"
+  }
+}
