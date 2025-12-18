@@ -34,40 +34,49 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                    <td class="px-4 py-3">Keuzedeel A</td>
-                    <td class="px-4 py-3">26604K0059</td>
-                    <td class="px-4 py-3">1</td>
-                    <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">ACTIEF</span></td>
-                    <td class="px-4 py-3">15/30</td>
-                    <td class="px-4 py-3">
-                        <button class="text-tcr-green hover:text-tcr-lime mr-2">BEWERKEN</button>
-                        <button class="text-red-500 hover:text-red-700">ANNULEREN</button>
+            @if($keuzedelen->isEmpty())
+                <tr>
+                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                        Nog geen keuzedelen toegevoegd.
                     </td>
                 </tr>
-                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                    <td class="px-4 py-3">Keuzedeel B</td>
-                    <td class="px-4 py-3">26604K0060</td>
-                    <td class="px-4 py-3">1</td>
-                    <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">ACTIEF</span></td>
-                    <td class="px-4 py-3"><span class="text-red-600 font-semibold">30/30</span></td>
-                    <td class="px-4 py-3">
-                        <button class="text-tcr-green hover:text-tcr-lime mr-2">BEWERKEN</button>
-                        <button class="text-red-500 hover:text-red-700">ANNULEREN</button>
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                    <td class="px-4 py-3">Keuzedeel C</td>
-                    <td class="px-4 py-3">26604K0061</td>
-                    <td class="px-4 py-3">2</td>
-                    <td class="px-4 py-3"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">INACTIEF</span></td>
-                    <td class="px-4 py-3">0/30</td>
-                    <td class="px-4 py-3">
-                        <button class="text-tcr-green hover:text-tcr-lime mr-2">BEWERKEN</button>
-                        <button class="text-red-500 hover:text-red-700">ANNULEREN</button>
-                    </td>
-                </tr>
+            @else
+                @foreach($keuzedelen as $k)
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="px-4 py-3">{{ $k->naam }}</td>
+                        <td class="px-4 py-3">{{ $k->code }}</td>
+                        <td class="px-4 py-3">{{ $k->periode }}</td>
+
+                        <td class="px-4 py-3">
+                            @if($k->actief)
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">ACTIEF</span>
+                            @else
+                                <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">INACTIEF</span>
+                            @endif
+                        </td>
+
+                        <td class="px-4 py-3">
+                            @php
+                                // zolang je nog geen echte inschrijvingen hebt:
+                                $bezetting = $k->bezetting ?? 0;
+                            @endphp
+
+                            @if($bezetting >= $k->max_studenten)
+                                <span class="text-red-600 font-semibold">{{ $bezetting }}/{{ $k->max_studenten }}</span>
+                            @else
+                                {{ $bezetting }}/{{ $k->max_studenten }}
+                            @endif
+                        </td>
+
+                        <td class="px-4 py-3">
+                            <button class="text-tcr-green hover:text-tcr-lime mr-2">BEWERKEN</button>
+                            <button class="text-red-500 hover:text-red-700">ANNULEREN</button>
+                        </td>
+                    </tr>
+                @endforeach
+            @endif
             </tbody>
+
         </table>
     </div>
 
