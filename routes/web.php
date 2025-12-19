@@ -1,6 +1,8 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InschrijvingController;
+use App\Models\Keuzedeel;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,3 +97,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.student_inlezen');
     })->name('studenten.inlezen');
 });
+
+Route::post('/inschrijven', [InschrijvingController::class, 'store'])
+    ->middleware('auth')
+    ->name('inschrijving.store');
+    
+    Route::get('/keuzedelen/{id}', function ($id) {
+    $keuzedeel = Keuzedeel::findOrFail($id);
+    return view('keuzedelen', compact('keuzedeel'));
+})->name('keuzedeel.show');

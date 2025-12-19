@@ -65,9 +65,7 @@
         <div class="container mx-auto px-6">
             <nav class="flex items-center justify-between h-20">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-tcr-lime rounded flex items-center justify-center">
-                        <span class="text-tcr-green font-bold text-xl">T</span>
-                    </div>
+                   <img src="/images/techniek-college-rotterdam.webp" alt="TCR Logo" class="h-10 w-auto rounded">
                     <div>
                         <span class="text-xl font-bold">Techniek College Rotterdam</span>
                         <p class="text-xs text-gray-300">Keuzedeel Systeem</p>

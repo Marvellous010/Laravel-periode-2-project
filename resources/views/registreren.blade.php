@@ -57,9 +57,7 @@
         <div class="hidden lg:flex lg:w-1/2 flex-col justify-center p-12 text-white">
             <div class="max-w-lg">
                 <div class="flex items-center space-x-3 mb-8">
-                    <div class="w-16 h-16 gradient-lime rounded-2xl flex items-center justify-center shadow-lg">
-                        <span class="text-2xl text-white font-bold">TCR</span>
-                    </div>
+                    <img src="/images/techniek-college-rotterdam.webp" alt="TCR Logo" class="h-12 w-auto rounded-lg shadow-lg">
                 </div>
                 <h1 class="text-4xl font-bold mb-6">Word lid van ons platform</h1>
                 <p class="text-xl text-gray-200 mb-8">
@@ -90,18 +88,16 @@
 
         <!-- Rechter helft - Registreer formulier -->
         <div class="w-full lg:w-1/2 flex items-center justify-center p-6">
-            <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
-                <div class="text-center mb-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+                <div class="text-center mb-4">
                     <div class="flex justify-center mb-4 lg:hidden">
-                        <div class="w-16 h-16 gradient-lime rounded-2xl flex items-center justify-center shadow-lg">
-                            <span class="text-xl text-white font-bold">TCR</span>
-                        </div>
+                        <img src="/images/techniek-college-rotterdam.webp" alt="TCR Logo" class="h-12 w-auto rounded-lg shadow-lg">
                     </div>
                     <h2 class="text-3xl font-bold text-tcr-green mb-2">Registreren</h2>
                     <p class="text-gray-600">Maak een nieuw account aan</p>
                 </div>
 
-               <form method="POST" action="/registreren" class="space-y-4">
+               <form method="POST" action="/registreren" class="space-y-3">
     @csrf
 
     @if($errors->any())
@@ -117,37 +113,37 @@
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-2">Voornaam</label>
                             <input type="text" name="voornaam" placeholder="Jan" 
-                                   class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                                   class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-2">Achternaam</label>
                             <input type="text" name="achternaam" placeholder="de Vries" 
-                                   class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                                   class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">E-mailadres</label>
-                        <input type="email" name="email" placeholder="jan@gmail.com" 
-                               class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                        <input type="email" name="email" placeholder="Jan@gmail.com" 
+                               class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">Studentnummer</label>
-                       <input type="text" name="studentnummer" placeholder="9025xxx (7 cijfers)" 
-                               class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                       <input type="text" name="studentnummer" placeholder="90259567" 
+                               class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">Wachtwoord</label>
                         <input type="password" name="password" placeholder="••••••••" 
-                               class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                               class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">Bevestig wachtwoord</label>
                         <input type="password" name="password_confirmation" placeholder="••••••••" 
-                               class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                               class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                     </div>
 
                     <div class="flex items-start">
@@ -158,13 +154,13 @@
                     </div>
 
                     <div>
-                        <button type="submit" class="w-full gradient-lime text-tcr-green py-4 px-6 rounded-xl font-bold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                        <button type="submit" class="w-full gradient-lime text-tcr-green py-3 px-6 rounded-lg font-bold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
                             Account aanmaken
                         </button>
                     </div>
                 </form>
 
-                <div class="mt-8 text-center">
+                <div class="mt-4 text-center">
                     <p class="text-sm text-gray-500">Heb je al een account? <a href="/login" class="text-tcr-green font-semibold hover:text-tcr-gold transition-colors">Inloggen</a></p>
                 </div>
             </div>

@@ -71,9 +71,7 @@
         <div class="hidden lg:flex lg:w-1/2 flex-col justify-center p-12 text-white">
             <div class="max-w-lg">
                 <div class="flex items-center space-x-3 mb-8">
-                    <div class="w-16 h-16 gradient-lime rounded-2xl flex items-center justify-center shadow-lg">
-                        <span class="text-2xl text-white font-bold">TCR</span>
-                    </div>
+                    <img src="/images/techniek-college-rotterdam.webp" alt="TCR Logo" class="h-10 w-auto rounded">
                 </div>
                 <h1 class="text-4xl font-bold mb-6">Keuzedeel Systeem</h1>
                 <p class="text-xl text-gray-200 mb-8">
@@ -105,16 +103,14 @@
 
         <!-- Rechter helft - Login formulier -->
         <div class="w-full lg:w-1/2 flex items-center justify-center p-6">
-            <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
-                <div class="text-center mb-8">
-                    <div class="flex justify-center mb-4 lg:hidden">
-                        <div class="w-16 h-16 gradient-lime rounded-2xl flex items-center justify-center shadow-lg">
-                            <span class="text-xl text-white font-bold">TCR</span>
-                        </div>
-                    </div>
-                    <h2 class="text-3xl font-bold text-tcr-green mb-2">Inloggen</h2>
-                    <p class="text-gray-600">Log in op je account</p>
-                </div>
+            <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+              <div class="text-center mb-4">
+    <div class="flex justify-center mb-4 lg:hidden">
+        <img src="/images/techniek-college-rotterdam.webp" alt="TCR Logo" class="h-12 w-auto rounded-lg shadow-lg">
+    </div>
+    <h2 class="text-3xl font-bold text-tcr-green mb-2">Inloggen</h2>
+    <p class="text-gray-600">Log in op je account</p>
+</div>
 
                <form method="POST" action="/login" class="space-y-4">
     @csrf
@@ -137,14 +133,14 @@
 
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">E-mailadres</label>
-                        <input type="email" name="email" placeholder="naam@voorbeeld.nl" 
-                               class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                        <input type="email" name="email" placeholder="Jan@gmail.com" 
+                               class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">Wachtwoord</label>
                         <input type="password" name="password" placeholder="••••••••" 
-                               class="w-full border-2 border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:border-tcr-lime focus:ring-4 focus:ring-tcr-lime/20 transition-all duration-300">
+                               class="w-full border-2 border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-tcr-lime focus:ring-2 focus:ring-tcr-lime/20 transition-all duration-300">
                     </div>
 
                     <div class="flex items-center justify-between text-sm">

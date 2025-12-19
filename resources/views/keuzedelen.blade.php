@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Keuzedeel Detail')
+@section('title', 'Keuzedeel')
 
 @section('content')
     <nav class="mb-8">
@@ -17,17 +17,17 @@
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div class="h-64 gradient-green flex items-center justify-center relative">
                     <div class="absolute inset-0 bg-black/10"></div>
-                    <span class="text-8xl text-white/90 font-bold relative z-10">A</span>
+                    <span class="text-8xl text-white/90 font-bold relative z-10">K</span>
                 </div>
 
                 <div class="p-8">
                     <div class="flex items-start justify-between mb-6">
                         <div>
-                            <h1 class="text-3xl font-bold text-tcr-green mb-2">Keuzedeel Web Development</h1>
+                            <h1 class="text-3xl font-bold text-tcr-green mb-2">Keuzedeel</h1>
                             <div class="flex flex-wrap gap-2">
                                 <span class="px-3 py-1 bg-tcr-lime/20 text-tcr-green rounded-full text-sm font-medium">Periode 1</span>
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Code: 26604K0059</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">15/30 plaatsen</span>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Code: -</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">0/30 plaatsen</span>
                             </div>
                         </div>
                     </div>
@@ -40,9 +40,7 @@
                             Beschrijving
                         </h2>
                         <p class="text-gray-700 leading-relaxed">
-                            In dit keuzedeel leer je de fundamenten van moderne web development. Je werkt met HTML5, CSS3, JavaScript en 
-                            populaire frameworks zoals React en Vue.js. Aan het einde van dit keuzedeel ben je in staat om professionele, 
-                            responsive websites te bouwen die voldoen aan de laatste industriestandaarden.
+                            Beschrijving van het keuzedeel.
                         </p>
                     </section>
 
@@ -75,13 +73,13 @@
                         <div class="mb-3">
                             <div class="flex justify-between text-sm mb-2">
                                 <span class="text-gray-600">Bezetting</span>
-                                <span class="font-medium text-tcr-green">15 van 30 plaatsen</span>
+                                <span class="font-medium text-tcr-green">0 van 30 plaatsen</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-3">
-                                <div class="gradient-lime h-3 rounded-full" style="width: 50%"></div>
+                                <div class="gradient-lime h-3 rounded-full" style="width: 0%"></div>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600">Er zijn nog 15 plaatsen beschikbaar voor dit keuzedeel.</p>
+                        <p class="text-sm text-gray-600">Er zijn nog 30 plaatsen beschikbaar voor dit keuzedeel.</p>
                     </div>
                 </div>
             </div>
@@ -93,19 +91,15 @@
                 <dl class="space-y-4">
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Docent</dt>
-                        <dd class="font-medium text-gray-900">Dhr. J. van der Berg</dd>
+                        <dd class="font-medium text-gray-900">Nog niet bekend</dd>
                     </div>
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Locatie</dt>
-                        <dd class="font-medium text-gray-900">Gebouw A, Lokaal 2.14</dd>
+                        <dd class="font-medium text-gray-900">Nog niet bekend</dd>
                     </div>
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Periode</dt>
-                        <dd class="font-medium text-gray-900">Periode 1 (Sep - Jan)</dd>
-                    </div>
-                    <div>
-                        <dt class="text-sm text-gray-500 mb-1">Studiepunten</dt>
-                        <dd class="font-medium text-gray-900">5 ECTS</dd>
+                        <dd class="font-medium text-gray-900">Periode 1</dd>
                     </div>
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Minimum deelnemers</dt>
@@ -121,11 +115,79 @@
             <div class="gradient-green text-white rounded-2xl shadow-xl p-6">
                 <h3 class="font-bold mb-4 text-lg">Direct inschrijven?</h3>
                 <p class="text-sm mb-6 text-gray-200">Schrijf je nu in voor dit keuzedeel en start je leertraject.</p>
-                <button class="w-full bg-tcr-lime text-tcr-green py-3 rounded-xl font-bold hover:bg-tcr-gold hover:text-white transform hover:scale-105 transition-all duration-300">
+                <button id="inschrijf-btn" 
+                        data-keuzedeel-id="1" 
+                        class="w-full bg-tcr-lime text-tcr-green py-3 rounded-xl font-bold hover:bg-tcr-gold hover:text-white transform hover:scale-105 transition-all duration-300">
                     Inschrijven
                 </button>
-                <p class="text-xs mt-4 text-gray-300">Je kunt je inschrijving altijd annuleren voor de startdatum.</p>
+                <p id="inschrijf-message" class="text-xs mt-4 text-gray-300">Je kunt je inschrijving altijd annuleren voor de startdatum.</p>
             </div>
         </div>
     </div>
+
+    <script>
+        class Inschrijving {
+            constructor(keuzedeelId, csrfToken) {
+                this.keuzedeelId = keuzedeelId;
+                this.csrfToken = csrfToken;
+                this.apiUrl = '/inschrijven';
+                this.button = document.getElementById('inschrijf-btn');
+                this.messageEl = document.getElementById('inschrijf-message');
+            }
+
+            async schrijfIn() {
+                this.setLoading(true);
+                
+                try {
+                    const response = await fetch(this.apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': this.csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ keuzedeel_id: this.keuzedeelId })
+                    });
+                    
+                    const data = await response.json();
+                    this.updateUI(response.ok, data.message);
+                    return data;
+                } catch (error) {
+                    console.error('Inschrijving mislukt:', error);
+                    this.updateUI(false, 'Er is een fout opgetreden. Probeer het opnieuw.');
+                    throw error;
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            setLoading(isLoading) {
+                if (this.button) {
+                    this.button.disabled = isLoading;
+                    this.button.textContent = isLoading ? 'Bezig...' : 'Inschrijven';
+                }
+            }
+
+            updateUI(success, message) {
+                if (this.messageEl) {
+                    this.messageEl.textContent = message;
+                    this.messageEl.classList.remove('text-gray-300', 'text-green-300', 'text-red-300');
+                    this.messageEl.classList.add(success ? 'text-green-300' : 'text-red-300');
+                }
+                
+                if (success && this.button) {
+                    this.button.textContent = 'Ingeschreven ';
+                    this.button.disabled = true;
+                    this.button.classList.remove('bg-tcr-lime', 'hover:bg-tcr-gold');
+                    this.button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        document.getElementById('inschrijf-btn').addEventListener('click', async (e) => {
+            const keuzedeelId = e.target.dataset.keuzedeelId;
+            const inschrijving = new Inschrijving(keuzedeelId, '{{ csrf_token() }}');
+            await inschrijving.schrijfIn();
+        });
+    </script>
 @endsection
