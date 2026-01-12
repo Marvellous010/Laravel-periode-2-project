@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InschrijvingController;
 use App\Models\Keuzedeel;
+use App\Http\Controllers\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,30 +76,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/keuzedelen', [KeuzedeelController::class, 'index'])
         ->name('admin.keuzedelen.index');
 
-
     Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
         ->name('admin.keuzedelen.store');
 
-
-
     Route::get('/overzicht', function () {
         return view('admin.overzicht');
-    })->name('overzicht');
+    })->name('overzicht');  
 
     Route::get('/instellingen', function () {
         return view('admin.instellingen');
     })->name('instellingen');
 
-    Route::get('/studenten/inlezen', function () {
-        return view('admin.student_inlezen');
-    })->name('studenten.inlezen');
+    Route::get('/studenten/inlezen', [StudentController::class, 'showImportForm'])
+        ->name('studenten.inlezen');
+    
+    Route::post('/studenten/import', [StudentController::class, 'importCsv'])
+        ->name('studenten.import');
 });
 
 Route::post('/inschrijven', [InschrijvingController::class, 'store'])
     ->middleware('auth')
     ->name('inschrijving.store');
-    
-    Route::get('/keuzedelen/{id}', function ($id) {
+
+Route::get('/keuzedelen/{id}', function ($id) {
     $keuzedeel = Keuzedeel::findOrFail($id);
     return view('keuzedelen', compact('keuzedeel'));
 })->name('keuzedeel.show');
