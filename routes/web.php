@@ -72,13 +72,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
-    Route::get('/keuzedelen', function () {
-        return view('admin.keuzedelen');
-    })->name('keuzedelen');
+    Route::get('/keuzedelen', [KeuzedeelController::class, 'index'])
+        ->name('admin.keuzedelen.index');
 
-    Route::get('/keuzedelen/toevoegen', function () {
-        return view('admin.keuzedeel_toevoegen');
-    })->name('admin.keuzedelen.create');
 
     Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
         ->name('admin.keuzedelen.store');

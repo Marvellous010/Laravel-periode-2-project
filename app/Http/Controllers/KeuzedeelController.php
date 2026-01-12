@@ -58,4 +58,10 @@ class KeuzedeelController extends Controller
 
         return back()->with('success', 'Keuzedeel opgeslagen ✅');
     }
+    public function index()
+    {
+        $keuzedelen = DB::table('keuzedelen')->orderBy('id', 'desc')->get();
+        return view('admin.keuzedelen', compact('keuzedelen'));
+    }
+
 }
