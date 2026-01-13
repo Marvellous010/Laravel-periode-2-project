@@ -7,6 +7,23 @@ use App\Models\Keuzedeel;
 use Illuminate\Support\Facades\Auth;
 
 class InschrijvingController extends Controller {
+    public function index() {
+        $user = Auth::user();
+        
+        $huidigeInschrijvingen = $user->keuzedelen()
+            ->wherePivot('status', 'pending')
+            ->withPivot('created_at', 'cijfer')
+            ->get();
+        
+        $geschiedenis = $user->keuzedelen()
+            ->wherePivot('status', 'completed')
+            ->withPivot('created_at', 'cijfer')
+            ->orderBy('inschrijvingen.created_at', 'desc')
+            ->get();
+        
+        return view('inschrijvingen', compact('huidigeInschrijvingen', 'geschiedenis'));
+    }
+    
     public function store(Request $request) {
         $request->validate(['keuzedeel_id' => 'required|exists:keuzedelen,id']);
         

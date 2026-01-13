@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InschrijvingController;
 use App\Http\Controllers\KeuzedeelController;
+use App\Http\Controllers\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,9 +34,9 @@ Route::get('/dashboard', [KeuzedeelController::class, 'studentIndex'])
 Route::get('/keuzedelen/{id}', [KeuzedeelController::class, 'show'])
     ->name('keuzedeel.show');
 
-Route::get('/inschrijvingen', function () {
-    return view('inschrijvingen');
-});
+Route::get('/inschrijvingen', [InschrijvingController::class, 'index'])
+    ->middleware('auth')
+    ->name('inschrijvingen.index');
 
 Route::post('/inschrijven', [InschrijvingController::class, 'store'])
     ->middleware('auth')
