@@ -8,7 +8,7 @@ use App\Models\User;
 class Keuzedeel extends Model
 {
     protected $table = 'keuzedelen';
-
+    
     protected $fillable = [
         'naam',
         'code',
@@ -20,13 +20,12 @@ class Keuzedeel extends Model
         'min_studenten',
         'herhaalbaar',
         'actief',
-        'afbeelding',
+        'afbeelding'
     ];
-
-    public function inschrijvingen()
-    {
+    
+    public function inschrijvingen() {
         return $this->belongsToMany(User::class, 'inschrijvingen')
-            ->withPivot('status')
-            ->withTimestamps();
+                    ->withPivot('status', 'cijfer')
+                    ->withTimestamps();
     }
 }

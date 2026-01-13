@@ -80,13 +80,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/overzicht', function () {
         return view('admin.overzicht');
-    })->name('overzicht');
+    })->name('overzicht');  
 
     Route::get('/instellingen', function () {
         return view('admin.instellingen');
     })->name('instellingen');
 
-    Route::get('/studenten/inlezen', function () {
-        return view('admin.student_inlezen');
-    })->name('studenten.inlezen');
+    Route::get('/studenten/inlezen', [StudentController::class, 'showImportForm'])
+        ->name('studenten.inlezen');
+    
+    Route::post('/studenten/import', [StudentController::class, 'importCsv'])
+        ->name('studenten.import');
 });
