@@ -8,7 +8,8 @@ use App\Models\User;
 class Keuzedeel extends Model
 {
     protected $table = 'keuzedelen';
-    
+
+
     protected $fillable = [
         'naam',
         'code',
@@ -22,10 +23,20 @@ class Keuzedeel extends Model
         'actief',
         'afbeelding'
     ];
-    
+
     public function inschrijvingen() {
         return $this->belongsToMany(User::class, 'inschrijvingen')
                     ->withPivot('status', 'cijfer')
                     ->withTimestamps();
     }
+    public function show($id)
+{
+    $keuzedeel = Keuzedeel::findOrFail($id);
+
+    // geef 1 keuzedeel mee naar dezelfde view
+    return view('keuzedelen', compact('keuzedeel'));
 }
+
+
+}
+

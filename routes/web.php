@@ -26,11 +26,7 @@ Route::get('/wachtwoord-vergeten', function () {
     return view('wachtwoord-vergeten');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Student
-|--------------------------------------------------------------------------
-*/
+
 Route::get('/dashboard', [KeuzedeelController::class, 'studentIndex'])
     ->name('student.dashboard');
 
@@ -45,20 +41,10 @@ Route::post('/inschrijven', [InschrijvingController::class, 'store'])
     ->middleware('auth')
     ->name('inschrijving.store');
 
-/*
-|--------------------------------------------------------------------------
-| SLB
-|--------------------------------------------------------------------------
-*/
 Route::get('/presentatie', function () {
     return view('slb.presentatie');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin
-|--------------------------------------------------------------------------
-*/
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', function () {
@@ -80,7 +66,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/overzicht', function () {
         return view('admin.overzicht');
-    })->name('overzicht');  
+    })->name('overzicht');
 
     Route::get('/instellingen', function () {
         return view('admin.instellingen');
@@ -88,7 +74,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/studenten/inlezen', [StudentController::class, 'showImportForm'])
         ->name('studenten.inlezen');
-    
+
     Route::post('/studenten/import', [StudentController::class, 'importCsv'])
         ->name('studenten.import');
 });

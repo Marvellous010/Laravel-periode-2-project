@@ -68,7 +68,7 @@ class KeuzedeelController extends Controller
         // findOrFail geeft automatisch 404 als hij niet bestaat
         $keuzedeel = Keuzedeel::findOrFail($id);
 
-        return view('keuzedelen.show', compact('keuzedeel'));
+        return view('keuzedelen', compact('keuzedeel'));
     }
 }
 

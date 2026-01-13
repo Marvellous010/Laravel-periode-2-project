@@ -11,6 +11,15 @@
             Terug naar overzicht
         </a>
     </nav>
+    @if(isset($keuzedeel))
+        <h1 class="text-3xl font-bold text-tcr-green mb-4">{{ $keuzedeel->naam }}</h1>
+        <p class="text-gray-700 mb-6">{{ $keuzedeel->beschrijving }}</p>
+
+        <a href="{{ url('/keuzedelen') }}" class="underline text-tcr-green">← Terug naar alle keuzedelen</a>
+
+    @elseif(isset($keuzedelen))
+        {{-- hier komt je normale overzicht (foreach cards) --}}
+    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
