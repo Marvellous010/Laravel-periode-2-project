@@ -11,12 +11,14 @@
             Terug naar overzicht
         </a>
     </nav>
-    @php
-        $letter = strtoupper(substr($keuzedeel->naam ?? 'K', 0, 1));
-        $bezetting = $keuzedeel->inschrijvingen()->count();
-        $beschikbaar = $keuzedeel->max_studenten - $bezetting;
-        $percentage = ($keuzedeel->max_studenten > 0) ? min(100, round(($bezetting / $keuzedeel->max_studenten) * 100)) : 0;
-    @endphp
+    @if(isset($keuzedeel))
+        <h1 class="text-3xl font-bold text-tcr-green mb-4">{{ $keuzedeel->naam }}</h1>
+        <p class="text-gray-700 mb-6">{{ $keuzedeel->beschrijving }}</p>
+
+
+    @elseif(isset($keuzedelen))
+
+    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
@@ -98,26 +100,30 @@
                     @if($keuzedeel->docent)
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Docent</dt>
-                        <dd class="font-medium text-gray-900">{{ $keuzedeel->docent }}</dd>
+                        <dd class="font-medium text-gray-900">{{$keuzedeel-> docent}}</dd>
                     </div>
                     @endif
                     @if($keuzedeel->locatie)
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Locatie</dt>
-                        <dd class="font-medium text-gray-900">{{ $keuzedeel->locatie }}</dd>
+                        <dd class="font-medium text-gray-900">{{$keuzedeel-> locatie}}</dd>
                     </div>
                     @endif
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Periode</dt>
-                        <dd class="font-medium text-gray-900">Periode {{ $keuzedeel->periode }}</dd>
+                        <dd class="font-medium text-gray-900">{{$keuzedeel-> periode}}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500 mb-1">Studiepunten</dt>
+                        <dd class="font-medium text-gray-900"></dd>
                     </div>
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Minimum deelnemers</dt>
-                        <dd class="font-medium text-gray-900">{{ $keuzedeel->min_studenten }} studenten</dd>
+                        <dd class="font-medium text-gray-900">{{$keuzedeel-> min_studenten}}</dd>
                     </div>
                     <div>
                         <dt class="text-sm text-gray-500 mb-1">Maximum deelnemers</dt>
-                        <dd class="font-medium text-gray-900">{{ $keuzedeel->max_studenten }} studenten</dd>
+                        <dd class="font-medium text-gray-900">{{$keuzedeel-> max_studenten}}</dd>
                     </div>
                 </dl>
             </div>

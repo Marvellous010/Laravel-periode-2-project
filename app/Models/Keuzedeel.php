@@ -33,10 +33,10 @@ class Keuzedeel extends Model
 {
     $keuzedeel = Keuzedeel::findOrFail($id);
 
-    // geef 1 keuzedeel mee naar dezelfde view
     return view('keuzedelen', compact('keuzedeel'));
 }
 
 
 }
+
 
