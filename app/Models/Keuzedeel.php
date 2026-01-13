@@ -3,13 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
-class Keuzedeel extends Model {
+class Keuzedeel extends Model
+{
     protected $table = 'keuzedelen';
-    
-    public function inschrijvingen() {
+
+    protected $fillable = [
+        'naam',
+        'code',
+        'beschrijving',
+        'periode',
+        'docent',
+        'locatie',
+        'max_studenten',
+        'min_studenten',
+        'herhaalbaar',
+        'actief',
+        'afbeelding',
+    ];
+
+    public function inschrijvingen()
+    {
         return $this->belongsToMany(User::class, 'inschrijvingen')
-                    ->withPivot('status')
-                    ->withTimestamps();
+            ->withPivot('status')
+            ->withTimestamps();
     }
 }

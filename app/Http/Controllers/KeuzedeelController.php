@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Keuzedeel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class KeuzedeelController extends Controller
 {
+    // ✅ Admin: overzicht keuzedelen
+    public function index()
+    {
+        $keuzedelen = Keuzedeel::orderBy('id', 'desc')->get();
+        return view('admin.keuzedelen', compact('keuzedelen'));
+    }
+
+    // ✅ Admin: opslaan keuzedeel
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -27,41 +35,40 @@ class KeuzedeelController extends Controller
             'afbeelding' => ['nullable','file','mimes:jpg,jpeg,png,webp','max:4096'],
         ]);
 
-        $herhaalbaar = $request->has('herhaalbaar') ? 1 : 0;
-        $actief = $request->has('actief') ? 1 : 0;
+        // checkbox → 0/1
+        $data['herhaalbaar'] = $request->has('herhaalbaar') ? 1 : 0;
+        $data['actief'] = $request->has('actief') ? 1 : 0;
 
-        $afbeeldingPad = null;
         if ($request->hasFile('afbeelding')) {
-            $afbeeldingPad = $request->file('afbeelding')->store('keuzedelen', 'public');
+            $data['afbeelding'] = $request->file('afbeelding')->store('keuzedelen', 'public');
+        } else {
+            $data['afbeelding'] = null;
         }
 
-        DB::table('keuzedelen')->insert([
-            'naam' => $data['naam'],
-            'code' => $data['code'],
-            'beschrijving' => $data['beschrijving'],
-
-            'periode' => $data['periode'],
-            'docent' => $data['docent'] ?? null,
-            'locatie' => $data['locatie'] ?? null,
-
-            'max_studenten' => $data['max_studenten'],
-            'min_studenten' => $data['min_studenten'],
-
-            'herhaalbaar' => $herhaalbaar,
-            'actief' => $actief,
-
-            'afbeelding' => $afbeeldingPad,
-
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // ✅ Opslaan via model (timestamps gaan automatisch)
+        Keuzedeel::create($data);
 
         return back()->with('success', 'Keuzedeel opgeslagen ✅');
     }
-    public function index()
+
+    // ✅ Student dashboard: alleen zichtbare (actieve) keuzedelen
+    public function studentIndex()
     {
-        $keuzedelen = DB::table('keuzedelen')->orderBy('id', 'desc')->get();
-        return view('admin.keuzedelen', compact('keuzedelen'));
+        $keuzedelen = Keuzedeel::where('actief', 1)
+            ->orderBy('periode')
+            ->orderBy('naam')
+            ->get();
+
+        return view('student_dashboard', compact('keuzedelen'));
     }
 
+    // ✅ Detailpagina keuzedeel
+    public function show($id)
+    {
+        // findOrFail geeft automatisch 404 als hij niet bestaat
+        $keuzedeel = Keuzedeel::findOrFail($id);
+
+        return view('keuzedelen.show', compact('keuzedeel'));
+    }
 }
+

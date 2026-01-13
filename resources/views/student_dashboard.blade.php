@@ -25,7 +25,6 @@
     </div>
 
     <h2 class="text-2xl font-bold text-tcr-green mb-6">Beschikbare Keuzedelen</h2>
-    
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
             <div class="h-40 gradient-green flex items-center justify-center relative overflow-hidden">

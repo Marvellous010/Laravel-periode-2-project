@@ -1,85 +1,82 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InschrijvingController;
-use App\Models\Keuzedeel;
+use App\Http\Controllers\KeuzedeelController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Public / Auth
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
-
-use App\Http\Controllers\TestController;
-
-Route::get('/db-test', [TestController::class, 'index']);
-use App\Http\Controllers\KeuzedeelController;
-
-
-Route::get('/keuzedelen/toevoegen', function () {
-    return view('admin.keuzedeel_toevoegen');
-})->name('admin.keuzedelen.create');
-
-Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
-    ->name('admin.keuzedelen.store');
-
-
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::get('/registreren', [AuthController::class, 'showRegister']);
-
-Route::post('/registreren', [AuthController::class, 'register']);
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/registreren', [AuthController::class, 'showRegister']);
+Route::post('/registreren', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/wachtwoord-vergeten', function () {
     return view('wachtwoord-vergeten');
 });
 
-// Student Routes
-Route::get('/dashboard', function () {
-    return view('student_dashboard');
-});
+/*
+|--------------------------------------------------------------------------
+| Student
+|--------------------------------------------------------------------------
+*/
+Route::get('/dashboard', [KeuzedeelController::class, 'studentIndex'])
+    ->name('student.dashboard');
+
+Route::get('/keuzedelen/{id}', [KeuzedeelController::class, 'show'])
+    ->name('keuzedeel.show');
 
 Route::get('/inschrijvingen', function () {
     return view('inschrijvingen');
 });
 
-Route::get('/keuzedelen', function () {
-    return view('keuzedelen');
-});
+Route::post('/inschrijven', [InschrijvingController::class, 'store'])
+    ->middleware('auth')
+    ->name('inschrijving.store');
 
-// SLB Routes
+/*
+|--------------------------------------------------------------------------
+| SLB
+|--------------------------------------------------------------------------
+*/
 Route::get('/presentatie', function () {
     return view('slb.presentatie');
 });
 
-// Admin Routes
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Admin overzicht
     Route::get('/keuzedelen', [KeuzedeelController::class, 'index'])
-        ->name('admin.keuzedelen.index');
+        ->name('keuzedelen.index');
 
+    // Admin create pagina (formulier)
+    Route::get('/keuzedelen/toevoegen', function () {
+        return view('admin.keuzedeel_toevoegen');
+    })->name('keuzedelen.create');
 
+    // Admin opslaan (POST)
     Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
-        ->name('admin.keuzedelen.store');
-
-
+        ->name('keuzedelen.store');
 
     Route::get('/overzicht', function () {
         return view('admin.overzicht');
@@ -93,12 +90,3 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.student_inlezen');
     })->name('studenten.inlezen');
 });
-
-Route::post('/inschrijven', [InschrijvingController::class, 'store'])
-    ->middleware('auth')
-    ->name('inschrijving.store');
-    
-    Route::get('/keuzedelen/{id}', function ($id) {
-    $keuzedeel = Keuzedeel::findOrFail($id);
-    return view('keuzedelen', compact('keuzedeel'));
-})->name('keuzedeel.show');

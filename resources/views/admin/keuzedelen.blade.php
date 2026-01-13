@@ -57,7 +57,6 @@
 
                         <td class="px-4 py-3">
                             @php
-                                // zolang je nog geen echte inschrijvingen hebt:
                                 $bezetting = $k->bezetting ?? 0;
                             @endphp
 
