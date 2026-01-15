@@ -56,18 +56,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
-    // Admin overzicht
+
     Route::get('/keuzedelen', [KeuzedeelController::class, 'index'])
         ->name('keuzedelen.index');
 
-    // Admin create pagina (formulier)
     Route::get('/keuzedelen/toevoegen', function () {
         return view('admin.keuzedeel_toevoegen');
     })->name('keuzedelen.create');
 
-    // Admin opslaan (POST)
     Route::post('/keuzedelen/toevoegen', [KeuzedeelController::class, 'store'])
         ->name('keuzedelen.store');
+
+    Route::get('/keuzedelen/{keuzedeel}/bewerken', [KeuzedeelController::class, 'edit'])
+        ->name('keuzedelen.edit');
+
+    Route::put('/keuzedelen/{keuzedeel}', [KeuzedeelController::class, 'update'])
+        ->name('keuzedelen.update');
+
+    Route::delete('/keuzedelen/{keuzedeel}', [KeuzedeelController::class, 'destroy'])
+        ->name('keuzedelen.verwijderen');
+
 
     Route::get('/overzicht', function () {
         return view('admin.overzicht');
@@ -82,7 +90,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/studenten/import', [StudentController::class, 'importCsv'])
         ->name('studenten.import');
-    
+
     Route::delete('/inschrijvingen/verwijder-oud', [InschrijvingController::class, 'deleteOld'])
         ->name('inschrijvingen.deleteOld');
 });

@@ -60,9 +60,56 @@ class KeuzedeelController extends Controller
 
     public function show($id)
     {
+
         $keuzedeel = Keuzedeel::findOrFail($id);
 
         return view('keuzedelen', compact('keuzedeel'));
     }
+    public function edit(Keuzedeel $keuzedeel)
+    {
+        return view('admin.keuzedelen_bewerken', compact('keuzedeel'));
+    }
+
+    public function update(Request $request, Keuzedeel $keuzedeel)
+    {
+        $data = $request->validate([
+            'naam' => ['required','string','max:255'],
+            'code' => ['required','string','max:50'],
+            'beschrijving' => ['required','string','max:2000'],
+            'periode' => ['required','string','max:10'],
+            'docent' => ['nullable','string','max:255'],
+            'locatie' => ['nullable','string','max:255'],
+            'max_studenten' => ['required','integer','min:1'],
+            'min_studenten' => ['required','integer','min:0'],
+            'herhaalbaar' => ['nullable'],
+            'actief' => ['nullable'],
+            'afbeelding' => ['nullable','file','mimes:jpg,jpeg,png,webp','max:4096'],
+        ]);
+
+        $data['herhaalbaar'] = $request->has('herhaalbaar') ? 1 : 0;
+        $data['actief'] = $request->has('actief') ? 1 : 0;
+
+        // Als er een nieuwe afbeelding is geupload, overschrijf
+        if ($request->hasFile('afbeelding')) {
+            $data['afbeelding'] = $request->file('afbeelding')->store('keuzedelen', 'public');
+        } else {
+            // Als je de oude wilt bewaren bij geen upload:
+            unset($data['afbeelding']);
+        }
+
+        $keuzedeel->update($data);
+
+        return redirect()->route('admin.keuzedelen.index')
+            ->with('success', 'Keuzedeel bijgewerkt ✅');
+    }
+
+    public function destroy(Keuzedeel $keuzedeel)
+    {
+        $keuzedeel->delete();
+
+        return redirect()->route('admin.keuzedelen.index')
+            ->with('success', 'Keuzedeel verwijderd 🗑️');
+    }
+
 }
 

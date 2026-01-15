@@ -68,8 +68,18 @@
                         </td>
 
                         <td class="px-4 py-3">
-                            <button class="text-tcr-green hover:text-tcr-lime mr-2">BEWERKEN</button>
-                            <button class="text-red-500 hover:text-red-700">ANNULEREN</button>
+                            <button class="text-tcr-green hover:text-tcr-lime mr-2"><a href="{{ route('admin.keuzedelen.edit', $k) }}">BEWERKEN</a></button>
+                            <form action="{{ route('admin.keuzedelen.verwijderen', $k) }}"
+                                  method="POST"
+                                  class="inline"
+                                  onsubmit="return confirm('Weet je zeker dat je dit keuzedeel wilt verwijderen?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700 font-semibold">
+                                    VERWIJDEREN
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
                 @endforeach
