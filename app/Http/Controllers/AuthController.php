@@ -31,13 +31,15 @@ class AuthController extends Controller
     ]);
 
         $user = User::create([
-            'voornaam' => $data['voornaam'],
-            'achternaam' => $data['achternaam'],
-            'email' => $data['email'],
-            'studentnummer' => $data['studentnummer'],
-            'password' => Hash::make($data['password']),
+            'name' => $request->voornaam . ' ' . $request->achternaam,
+            'voornaam' => $request->voornaam,
+            'achternaam' => $request->achternaam,
+            'email' => $request->email,
+            'studentnummer' => $request->studentnummer,
+            'password' => bcrypt($request->password),
             'rol' => 'student',
         ]);
+
 
         Auth::login($user);
 
@@ -58,12 +60,12 @@ class AuthController extends Controller
 
         $loginField = $request->email;
         $password = $request->password;
-        
+
         // Probeer eerst met email, dan met studentnummer
         $user = User::where('email', $loginField)
                     ->orWhere('studentnummer', $loginField)
                     ->first();
-        
+
         if ($user && Hash::check($password, $user->password)) {
             Auth::login($user, $request->has('remember'));
             $request->session()->regenerate();

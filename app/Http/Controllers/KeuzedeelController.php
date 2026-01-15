@@ -7,14 +7,12 @@ use Illuminate\Http\Request;
 
 class KeuzedeelController extends Controller
 {
-    // ✅ Admin: overzicht keuzedelen
     public function index()
     {
         $keuzedelen = Keuzedeel::orderBy('id', 'desc')->get();
         return view('admin.keuzedelen', compact('keuzedelen'));
     }
 
-    // ✅ Admin: opslaan keuzedeel
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -35,7 +33,6 @@ class KeuzedeelController extends Controller
             'afbeelding' => ['nullable','file','mimes:jpg,jpeg,png,webp','max:4096'],
         ]);
 
-        // checkbox → 0/1
         $data['herhaalbaar'] = $request->has('herhaalbaar') ? 1 : 0;
         $data['actief'] = $request->has('actief') ? 1 : 0;
 
@@ -45,13 +42,12 @@ class KeuzedeelController extends Controller
             $data['afbeelding'] = null;
         }
 
-        // ✅ Opslaan via model (timestamps gaan automatisch)
+
         Keuzedeel::create($data);
 
         return back()->with('success', 'Keuzedeel opgeslagen ✅');
     }
 
-    // ✅ Student dashboard: alleen zichtbare (actieve) keuzedelen
     public function studentIndex()
     {
         $keuzedelen = Keuzedeel::where('actief', 1)
@@ -62,10 +58,8 @@ class KeuzedeelController extends Controller
         return view('student_dashboard', compact('keuzedelen'));
     }
 
-    // ✅ Detailpagina keuzedeel
     public function show($id)
     {
-        // findOrFail geeft automatisch 404 als hij niet bestaat
         $keuzedeel = Keuzedeel::findOrFail($id);
 
         return view('keuzedelen', compact('keuzedeel'));
