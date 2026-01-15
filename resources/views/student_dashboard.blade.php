@@ -29,9 +29,8 @@
 
         @forelse($keuzedelen as $k)
             @php
-                // Later wordt bezetting echt via inschrijvingen geteld. Voor nu 0.
-                $bezetting = $k->bezetting ?? 0;
-                $max = $k->max_studenten ?? 0;
+                $bezetting = $k->inschrijvingen()->count();
+                $max = $k->max_studenten;
 
                 $isVol = ($max > 0 && $bezetting >= $max);
                 $percentage = ($max > 0) ? min(100, round(($bezetting / $max) * 100)) : 0;

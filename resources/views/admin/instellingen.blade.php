@@ -21,9 +21,20 @@
 
     <section class="bg-white rounded-lg shadow p-6 mb-6">
         <h2 class="text-xl font-bold text-tcr-green mb-4">DATA BEHEER</h2>
-        <div class="mb-2">
-            <button class="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600 transition-colors">VERWIJDER ALLE OUDE INSCHRIJVINGEN</button>
-        </div>
+        
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        <form action="{{ route('admin.inschrijvingen.deleteOld') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je alle oude inschrijvingen wilt verwijderen? Dit kan niet ongedaan worden!');">
+            @csrf
+            @method('DELETE')
+            <div class="mb-2">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600 transition-colors">VERWIJDER ALLE OUDE INSCHRIJVINGEN</button>
+            </div>
+        </form>
         <p class="text-red-500 text-sm">LET OP: DEZE ACTIE KAN NIET ONGEDAAN WORDEN</p>
     </section>
 

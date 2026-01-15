@@ -11,14 +11,13 @@
             Terug naar overzicht
         </a>
     </nav>
-    @if(isset($keuzedeel))
-        <h1 class="text-3xl font-bold text-tcr-green mb-4">{{ $keuzedeel->naam }}</h1>
-        <p class="text-gray-700 mb-6">{{ $keuzedeel->beschrijving }}</p>
-
-
-    @elseif(isset($keuzedelen))
-
-    @endif
+    
+    @php
+        $letter = strtoupper(substr($keuzedeel->naam ?? 'K', 0, 1));
+        $bezetting = $keuzedeel->inschrijvingen()->count();
+        $beschikbaar = $keuzedeel->max_studenten - $bezetting;
+        $percentage = ($keuzedeel->max_studenten > 0) ? min(100, round(($bezetting / $keuzedeel->max_studenten) * 100)) : 0;
+    @endphp
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
@@ -141,10 +140,25 @@
         </div>
     </div>
 
+    <!-- Custom Modal voor inschrijf feedback -->
+    <div id="inschrijfModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all">
+            <div class="text-center">
+                <div id="modalIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4">
+                    <!-- Icon wordt dynamisch ingevuld -->
+                </div>
+                <h3 id="modalTitle" class="text-xl font-bold text-gray-900 mb-2"></h3>
+                <p id="modalMessage" class="text-gray-600 mb-6"></p>
+                <button onclick="closeInschrijfModal()" class="w-full bg-tcr-green text-white py-3 rounded-xl font-bold hover:bg-tcr-lime hover:text-tcr-green transition-colors">
+                    Sluiten
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const button = document.getElementById('inschrijf-btn');
-            const message = document.getElementById('inschrijf-message');
             
             if (button) {
                 button.addEventListener('click', function() {
@@ -166,27 +180,51 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                        showInschrijfModal(data.success, data.message);
                         if (data.success) {
-                            message.textContent = data.message;
-                            message.className = 'text-xs mt-4 text-green-300 font-bold';
                             button.textContent = 'Ingeschreven!';
                             button.className = 'w-full bg-green-500 text-white py-3 rounded-xl font-bold cursor-not-allowed';
+                            setTimeout(() => location.reload(), 1500);
                         } else {
-                            message.textContent = data.message;
-                            message.className = 'text-xs mt-4 text-red-300 font-bold';
                             button.disabled = false;
                             button.textContent = 'Inschrijven';
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        message.textContent = 'Er is een fout opgetreden. Probeer het opnieuw.';
-                        message.className = 'text-xs mt-4 text-red-300 font-bold';
+                        showInschrijfModal(false, 'Er is een fout opgetreden. Probeer het opnieuw.');
                         button.disabled = false;
                         button.textContent = 'Inschrijven';
                     });
                 });
             }
         });
+
+        function showInschrijfModal(success, message) {
+            const modal = document.getElementById('inschrijfModal');
+            const icon = document.getElementById('modalIcon');
+            const title = document.getElementById('modalTitle');
+            const messageEl = document.getElementById('modalMessage');
+
+            if (success) {
+                icon.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4';
+                icon.innerHTML = '<svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                title.textContent = 'Gelukt!';
+            } else {
+                icon.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4';
+                icon.innerHTML = '<svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                title.textContent = 'Fout';
+            }
+
+            messageEl.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeInschrijfModal() {
+            const modal = document.getElementById('inschrijfModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
     </script>
 @endsection

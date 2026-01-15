@@ -42,6 +42,10 @@ Route::post('/inschrijven', [InschrijvingController::class, 'store'])
     ->middleware('auth')
     ->name('inschrijving.store');
 
+Route::delete('/inschrijven/{keuzedeelId}', [InschrijvingController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('inschrijving.destroy');
+
 Route::get('/presentatie', function () {
     return view('slb.presentatie');
 });
@@ -78,4 +82,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/studenten/import', [StudentController::class, 'importCsv'])
         ->name('studenten.import');
+    
+    Route::delete('/inschrijvingen/verwijder-oud', [InschrijvingController::class, 'deleteOld'])
+        ->name('inschrijvingen.deleteOld');
 });

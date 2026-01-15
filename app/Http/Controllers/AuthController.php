@@ -51,12 +51,21 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
+        $request->validate([
+            'email' => 'required',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->has('remember'))) {
+        $loginField = $request->email;
+        $password = $request->password;
+        
+        // Probeer eerst met email, dan met studentnummer
+        $user = User::where('email', $loginField)
+                    ->orWhere('studentnummer', $loginField)
+                    ->first();
+        
+        if ($user && Hash::check($password, $user->password)) {
+            Auth::login($user, $request->has('remember'));
             $request->session()->regenerate();
             return redirect('/dashboard');
         }
