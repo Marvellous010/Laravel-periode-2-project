@@ -5,56 +5,104 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Keuzedeel;
-use App\Models\Inschrijving;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class CsvImportController extends Controller
 {
+    /**
+     * Toon het CSV import formulier
+     */
     public function showImportForm()
     {
         return view('admin.student_inlezen');
     }
 
+    /**
+     * Importeer studenten en keuzedelen uit CSV bestand
+     * 
+     * CSV formaat:
+     * - Scheidingsteken: ;
+     * - Kolom 3: Studentnummer
+     * - Kolom 4: Naam
+     * - Regel 5: Keuzedeel codes in header
+     * - Email wordt: [studentnummer]@student.tcr.nl
+     * - Wachtwoord wordt: password123
+     */
     public function importCsv(Request $request)
     {
+        // Controleer of er een bestand is geupload
         $request->validate([
             'csv_file' => 'required|file|mimes:csv,txt|max:10240'
         ]);
 
+        // Haal het bestand op
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
         
-        $csvData = array_map(function($line) {
-            return str_getcsv($line, ';');
-        }, file($path));
-
-        $imported = 0;
-        $errors = [];
-        $keuzedelenCreated = 0;
-        $behaaldeKeuzedelen = [];
-        $studentStats = [];
+        // Lees alle regels
+        $lines = file($path);
         
-        $keuzedelenMapping = $this->getKeuzedeelMapping($csvData);
+        // Converteer regels naar arrays
+        $rows = [];
+        foreach ($lines as $line) {
+            $rows[] = str_getcsv($line, ';');
+        }
         
-        $this->ensureKeuzedelenExist($keuzedelenMapping, $keuzedelenCreated);
+        // Tellers
+        $aantalStudenten = 0;
+        $aantalKeuzedelen = 0;
+        $fouten = [];
 
-        foreach ($csvData as $index => $row) {
-            if ($index < 7) continue;
+        // Maak keuzedelen aan uit de header (regel 5, index 4)
+        if (isset($rows[4])) {
+            $headerRow = $rows[4];
             
-            if (empty($row[2]) || empty($row[3])) continue;
+            // Loop door kolommen, begin bij kolom 8 (index 7), elke 4 kolommen
+            for ($k = 7; $k < count($headerRow); $k += 4) {
+                $code = trim($headerRow[$k]);
+                
+                if (!empty($code)) {
+                    // Maak keuzedeel aan als het nog niet bestaat
+                    $bestaatAl = Keuzedeel::where('code', $code)->exists();
+                    
+                    if (!$bestaatAl) {
+                        Keuzedeel::create([
+                            'naam' => 'Keuzedeel ' . $code,
+                            'code' => $code,
+                            'beschrijving' => 'Automatisch aangemaakt uit CSV',
+                            'periode' => '1',
+                            'max_studenten' => 30,
+                            'min_studenten' => 10,
+                            'herhaalbaar' => 0,
+                            'actief' => 1
+                        ]);
+                        $aantalKeuzedelen++;
+                    }
+                }
+            }
+        }
 
+        // Loop door elke student regel (begin bij regel 8, index 7)
+        for ($i = 7; $i < count($rows); $i++) {
+            $kolommen = $rows[$i];
+            
+            // Sla lege regels over
+            if (empty($kolommen[2]) || empty($kolommen[3])) {
+                continue;
+            }
+            
             try {
-                $studentnummer = trim($row[2]);
-                $naam = trim($row[3]);
-                $opleidingscode = trim($row[4]);
-                $cohort = trim($row[6] ?? '');
-
-                $naamParts = explode(' ', $naam);
-                $voornaam = $naamParts[0];
-                $achternaam = implode(' ', array_slice($naamParts, 1));
-
-                $user = User::updateOrCreate(
+                // Haal studentnummer en naam uit de kolommen
+                $studentnummer = trim($kolommen[2]);
+                $naam = trim($kolommen[3]);
+                
+                // Split naam in voornaam en achternaam
+                $naamDelen = explode(' ', $naam);
+                $voornaam = $naamDelen[0];
+                $achternaam = count($naamDelen) > 1 ? implode(' ', array_slice($naamDelen, 1)) : '';
+                
+                // Maak of update de student
+                User::updateOrCreate(
                     ['studentnummer' => $studentnummer],
                     [
                         'voornaam' => $voornaam,
@@ -64,177 +112,29 @@ class CsvImportController extends Controller
                         'rol' => 'student'
                     ]
                 );
-
-                $studentKeuzedelen = $this->processKeuzedelen($user, $row, $keuzedelenMapping);
                 
-                if (!empty($studentKeuzedelen['behaald'])) {
-                    $studentStats[$studentnummer] = [
-                        'naam' => $voornaam . ' ' . $achternaam,
-                        'behaald' => $studentKeuzedelen['behaald'],
-                        'in_progress' => $studentKeuzedelen['in_progress']
-                    ];
-                    
-                    foreach ($studentKeuzedelen['behaald'] as $kd) {
-                        if (!isset($behaaldeKeuzedelen[$kd['code']])) {
-                            $behaaldeKeuzedelen[$kd['code']] = [
-                                'naam' => $kd['naam'],
-                                'studenten' => []
-                            ];
-                        }
-                        $behaaldeKeuzedelen[$kd['code']]['studenten'][] = $voornaam . ' ' . $achternaam;
-                    }
-                }
+                $aantalStudenten++;
                 
-                $imported++;
             } catch (\Exception $e) {
-                $errors[] = "Regel {$index}: " . $e->getMessage();
-                Log::error("CSV Import Error: " . $e->getMessage());
+                $fouten[] = "Regel " . ($i + 1) . ": " . $e->getMessage();
             }
         }
 
-        $message = "";
-        if ($imported > 0) {
-            $message = "<strong>{$imported} studenten succesvol ingelezen!</strong><br>";
+        // Ga terug met resultaat
+        if ($aantalStudenten > 0 || $aantalKeuzedelen > 0) {
+            $bericht = "<strong>{$aantalStudenten} studenten geïmporteerd!</strong>";
             
-            if ($keuzedelenCreated > 0) {
-                $message .= "✅ {$keuzedelenCreated} nieuwe keuzedelen automatisch aangemaakt<br>";
+            if ($aantalKeuzedelen > 0) {
+                $bericht .= "<br>✅ {$aantalKeuzedelen} nieuwe keuzedelen aangemaakt";
             }
             
-            if (!empty($behaaldeKeuzedelen)) {
-                $message .= "<br><strong>Behaalde keuzedelen gedetecteerd:</strong><br>";
-                foreach ($behaaldeKeuzedelen as $code => $info) {
-                    $count = count($info['studenten']);
-                    $message .= "• <strong>{$info['naam']}</strong> ({$code}): {$count} student(en)<br>";
-                }
+            if (count($fouten) > 0) {
+                $bericht .= "<br><br>⚠️ " . count($fouten) . " fouten gevonden.";
             }
             
-            $totaalBehaald = count($behaaldeKeuzedelen);
-            if ($totaalBehaald > 0) {
-                $message .= "<br>📊 <strong>Totaal {$totaalBehaald} verschillende keuzedelen met behaalde resultaten</strong>";
-            }
-            
-            if (count($errors) > 0) {
-                $message .= "<br><br>⚠️ Let op: " . count($errors) . " fouten gevonden.";
-            }
-            
-            session()->flash('studentStats', $studentStats);
-            session()->flash('behaaldeKeuzedelen', $behaaldeKeuzedelen);
-            
-            return back()->with('success', $message)->with('importStats', [
-                'studenten' => $imported,
-                'keuzedelen_nieuw' => $keuzedelenCreated,
-                'behaalde_keuzedelen' => $behaaldeKeuzedelen,
-                'student_stats' => $studentStats
-            ]);
+            return back()->with('success', $bericht);
         } else {
-            return back()->with('error', 'Geen studenten ingelezen. Controleer het bestand.');
+            return back()->with('error', 'Geen studenten kunnen importeren. Check het bestand.');
         }
-    }
-
-    private function getKeuzedeelMapping($csvData)
-    {
-        $mapping = [];
-        
-        if (isset($csvData[4])) {
-            $headerRow = $csvData[4];
-            
-            for ($i = 7; $i < count($headerRow); $i += 4) {
-                if (!empty($headerRow[$i])) {
-                    $keuzedeelCode = trim($headerRow[$i]);
-                    $mapping[$i] = $keuzedeelCode;
-                }
-            }
-        }
-        
-        return $mapping;
-    }
-
-    private function ensureKeuzedelenExist($keuzedelenMapping, &$keuzedelenCreated)
-    {
-        foreach ($keuzedelenMapping as $code) {
-            $exists = Keuzedeel::where('code', $code)->exists();
-            
-            if (!$exists) {
-                Keuzedeel::create([
-                    'naam' => 'Keuzedeel ' . $code,
-                    'code' => $code,
-                    'beschrijving' => 'Automatisch aangemaakt uit CSV import',
-                    'periode' => '1',
-                    'max_studenten' => 30,
-                    'min_studenten' => 10,
-                    'herhaalbaar' => 0,
-                    'actief' => 1
-                ]);
-                $keuzedelenCreated++;
-                Log::info("Keuzedeel automatisch aangemaakt: {$code}");
-            }
-        }
-    }
-
-    private function processKeuzedelen($user, $row, $keuzedelenMapping)
-    {
-        $studentKeuzedelen = [
-            'behaald' => [],
-            'in_progress' => []
-        ];
-        
-        foreach ($keuzedelenMapping as $columnIndex => $keuzedeelCode) {
-            $resIndex = $columnIndex;
-            $spIndex = $columnIndex + 1;
-            
-            if (isset($row[$resIndex]) && isset($row[$spIndex])) {
-                $res = trim($row[$resIndex]);
-                $sp = trim($row[$spIndex]);
-                
-                if (!empty($sp) && is_numeric($sp) && $sp > 0) {
-                    $keuzedeel = Keuzedeel::where('code', $keuzedeelCode)->first();
-                    
-                    if ($keuzedeel) {
-                        $status = 'pending';
-                        $isBehaald = false;
-                        
-                        // Detecteer behaalde keuzedelen
-                        if (strtolower($res) === 'v' || strtolower($res) === 'vold' || strtolower($res) === 'voldoende') {
-                            $status = 'completed';
-                            $isBehaald = true;
-                        } elseif (strtolower($res) === 'g' || strtolower($res) === 'goed') {
-                            $status = 'completed';
-                            $isBehaald = true;
-                        } elseif ($res === 'x' || strtolower($res) === 'pv' || empty($res)) {
-                            $status = 'pending';
-                        }
-                        
-                        // Sla de inschrijving op
-                        Inschrijving::updateOrCreate(
-                            [
-                                'user_id' => $user->id,
-                                'keuzedeel_id' => $keuzedeel->id
-                            ],
-                            [
-                                'status' => $status
-                            ]
-                        );
-                        
-                        // Track voor rapportage
-                        if ($isBehaald) {
-                            $studentKeuzedelen['behaald'][] = [
-                                'code' => $keuzedeelCode,
-                                'naam' => $keuzedeel->naam
-                            ];
-                            Log::info("Student {$user->studentnummer} heeft keuzedeel {$keuzedeelCode} behaald");
-                        } elseif ($status === 'pending') {
-                            $studentKeuzedelen['in_progress'][] = [
-                                'code' => $keuzedeelCode,
-                                'naam' => $keuzedeel->naam
-                            ];
-                        }
-                    } else {
-                        Log::warning("Keuzedeel niet gevonden: {$keuzedeelCode}");
-                    }
-                }
-            }
-        }
-        
-        return $studentKeuzedelen;
     }
 }

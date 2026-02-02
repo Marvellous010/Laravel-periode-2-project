@@ -118,42 +118,4 @@ class InschrijvingController extends Controller {
         ]);
     }
 
-    public function export()
-    {
-        $inschrijvingen = Inschrijving::with(['user', 'keuzedeel'])
-            ->orderBy('keuzedeel_id')
-            ->orderBy('user_id')
-            ->get();
-
-        $filename = 'inschrijvingen_' . date('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        $callback = function() use ($inschrijvingen) {
-            $file = fopen('php://output', 'w');
-            
-            fputcsv($file, ['Studentnummer', 'Voornaam', 'Achternaam', 'Email', 'Keuzedeel', 'Periode', 'Status', 'Cijfer', 'Inschrijfdatum'], ';');
-            
-            foreach ($inschrijvingen as $inschrijving) {
-                fputcsv($file, [
-                    $inschrijving->user->studentnummer ?? '',
-                    $inschrijving->user->voornaam ?? $inschrijving->user->name,
-                    $inschrijving->user->achternaam ?? '',
-                    $inschrijving->user->email,
-                    $inschrijving->keuzedeel->naam,
-                    $inschrijving->keuzedeel->periode,
-                    $inschrijving->status,
-                    $inschrijving->cijfer ?? '',
-                    $inschrijving->created_at->format('d-m-Y H:i'),
-                ], ';');
-            }
-            
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
 }
